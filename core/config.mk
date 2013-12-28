@@ -863,4 +863,7 @@ export ANDROID_BUILD_PATHS:=$(abspath $(BUILD_SYSTEM)/no_java_path):$(ANDROID_BU
 export PATH:=$(abspath $(BUILD_SYSTEM)/no_java_path):$(PATH)
 endif
 
+# Rules for QCOM targets
+include $(BUILD_SYSTEM)/qcom_target.mk
+
 include $(BUILD_SYSTEM)/dumpvar.mk
