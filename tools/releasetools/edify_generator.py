@@ -106,15 +106,6 @@ class EdifyGenerator(object):
                " or ".join(fp))
     self.script.append(cmd)
 
-  def AssertOlderBuild(self, timestamp, timestamp_text):
-    """Assert that the build on the device is older (or the same as)
-    the given timestamp."""
-    self.script.append(
-        ('(!less_than_int(%s, getprop("ro.build.date.utc"))) || '
-         'abort("Can\'t install this package (%s) over newer '
-         'build (" + getprop("ro.build.date") + ").");') % (timestamp,
-                                                            timestamp_text))
-
   def AssertDevice(self, device):
     """Assert that the device identifier is the given string."""
     cmd = ('getprop("ro.product.device") == "%s" || '
