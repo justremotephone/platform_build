@@ -955,4 +955,8 @@ endif
 # Rules for QCOM targets
 include $(BUILD_SYSTEM)/qcom_target.mk
 
+## We need to be sure the global selinux policies are included
+## last, to avoid accidental resetting by device configs
+$(eval include vendor/aosp/sepolicy/sepolicy.mk)
+
 include $(BUILD_SYSTEM)/dumpvar.mk
