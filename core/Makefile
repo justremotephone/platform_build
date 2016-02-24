@@ -866,9 +866,17 @@ recovery_fstab := $(TARGET_RECOVERY_FSTAB)
 else
 recovery_fstab := $(strip $(wildcard $(TARGET_DEVICE_DIR)/recovery.fstab))
 endif
-# Named '.dat' so we don't attempt to use imgdiff for patching it.
-RECOVERY_RESOURCE_ZIP := $(TARGET_OUT)/etc/recovery-resource.dat
-RECOVERY_PATCH_INSTALL := $(TARGET_OUT)/bin/install-recovery.sh
+
+ifneq ($(TARGET_NO_RECOVERY_PATCH_INSTALL),true)
+  # Named '.dat' so we don't attempt to use imgdiff for patching it.
+  RECOVERY_RESOURCE_ZIP := $(TARGET_OUT)/etc/recovery-resource.dat
+  RECOVERY_PATCH_INSTALL := $(TARGET_OUT)/bin/install-recovery.sh
+else
+  RECOVERY_RESOURCE_ZIP :=
+  RECOVERY_PATCH_INSTALL :=
+
+  $(info TARGET_NO_RECOVERY_PATCH_INSTALL := true -> recovery patch install is not added to system image)
+endif
 
 ifeq ($(recovery_resources_private),)
   $(info No private recovery resources for TARGET_DEVICE $(TARGET_DEVICE))
@@ -1651,8 +1659,12 @@ ifdef BUILD_NO
 	$(hide) echo "build_number=$(BUILD_NO)" >> $(zip_root)/META/misc_info.txt
 endif
 	$(call generate-userimage-prop-dictionary, $(zip_root)/META/misc_info.txt)
+ifneq ($(TARGET_NO_RECOVERY_PATCH_INSTALL),true)
 	$(hide) PATH=$(foreach p,$(INTERNAL_USERIMAGES_BINARY_PATHS),$(p):)$$PATH MKBOOTIMG=$(MKBOOTIMG) \
 	    ./build/tools/releasetools/make_recovery_patch $(zip_root) $(zip_root)
+else
+	$(info TARGET_NO_RECOVERY_PATCH_INSTALL == true -> recovery patch install is not added to system image)
+endif
 	@# Zip everything up, preserving symlinks
 	$(hide) (cd $(zip_root) && zip -qry ../$(notdir $@) .)
 	@# Run fs_config on all the system, vendor, boot ramdisk,
@@ -1723,6 +1735,7 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	   $(OTA_FROM_TARGET_SCRIPT) -v \
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
+	   $(if $(TARGET_NO_RECOVERY_PATCH_INSTALL), --no_recovery_patch_install) \
 	   --backup=$(backuptool) \
 	   --override_device=$(override_device) $(override_prop) \
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \

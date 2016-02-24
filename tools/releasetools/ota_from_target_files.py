@@ -150,6 +150,7 @@ OPTIONS.full_bootloader = False
 # Stash size cannot exceed cache_size * threshold.
 OPTIONS.cache_size = None
 OPTIONS.stash_threshold = 0.8
+OPTIONS.no_recovery_patch_install = False
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -688,12 +689,13 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
                                      OPTIONS.input_tmp, "BOOT")
 
   if not block_based:
-    def output_sink(fn, data):
-      common.ZipWriteStr(output_zip, "recovery/" + fn, data)
-      system_items.Get("system/" + fn)
+    if not OPTIONS.no_recovery_patch_install:
+      def output_sink(fn, data):
+        common.ZipWriteStr(output_zip, "recovery/" + fn, data)
+        system_items.Get("system/" + fn)
 
-    common.MakeRecoveryPatch(OPTIONS.input_tmp, output_sink,
-                             recovery_img, boot_img)
+      common.MakeRecoveryPatch(OPTIONS.input_tmp, output_sink,
+                               recovery_img, boot_img)
 
     system_items.GetMetadata(input_zip)
     system_items.Get("system").SetPermissions(script)
@@ -1662,6 +1664,8 @@ def main(argv):
       except ValueError:
         raise ValueError("Cannot parse value %r for option %r - expecting "
                          "a float" % (a, o))
+    elif o in ("--no_recovery_patch_install",):
+      OPTIONS.no_recovery_patch_install = True
     else:
       return False
     return True
@@ -1689,7 +1693,8 @@ def main(argv):
                                  "backup=",
                                  "override_device=",
                                  "override_prop=",
-                                 "stash_threshold="
+                                 "stash_threshold=",
+                                 "no_recovery_patch_install"
                              ], extra_option_handler=option_handler)
 
   if len(args) != 2:
