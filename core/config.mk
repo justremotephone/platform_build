@@ -627,6 +627,9 @@ else
   DEFAULT_SYSTEM_DEV_CERTIFICATE := build/target/product/security/testkey
 endif
 
+# Rules for QCOM targets
+include $(BUILD_SYSTEM)/qcom_target.mk
+
 # ###############################################################
 # Set up final options.
 # ###############################################################
@@ -636,7 +639,7 @@ $(warning COMMON_GLOBAL_C(PP)FLAGS changed)
 $(info *** Device configurations are no longer allowed to change the global flags.)
 $(info *** COMMON_GLOBAL_CFLAGS: $(COMMON_GLOBAL_CFLAGS))
 $(info *** COMMON_GLOBAL_CPPFLAGS: $(COMMON_GLOBAL_CPPFLAGS))
-$(error bailing...)
+#$(error bailing...)
 endif
 
 # These can be changed to modify both host and device modules.
