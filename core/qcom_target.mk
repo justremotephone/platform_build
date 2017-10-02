@@ -35,10 +35,10 @@ ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
         endif
     endif
 
-    TARGET_GLOBAL_CFLAGS += $(qcom_flags)
-    TARGET_GLOBAL_CPPFLAGS += $(qcom_flags)
-    CLANG_TARGET_GLOBAL_CFLAGS += $(qcom_flags)
-    CLANG_TARGET_GLOBAL_CPPFLAGS += $(qcom_flags)
+    #TARGET_GLOBAL_CFLAGS += $(qcom_flags)
+    #TARGET_GLOBAL_CPPFLAGS += $(qcom_flags)
+    #CLANG_TARGET_GLOBAL_CFLAGS += $(qcom_flags)
+    #CLANG_TARGET_GLOBAL_CPPFLAGS += $(qcom_flags)
 
     # Multiarch needs these too..
     2ND_TARGET_GLOBAL_CFLAGS += $(qcom_flags)
